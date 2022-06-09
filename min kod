@@ -1,0 +1,77 @@
+import pygame
+import pickle
+
+# installeringen av pygame
+pygame.init()
+
+# Själva skärmen som spelet körs i
+skärm = pygame.display.set_mode((800, 800))
+
+# Bakgrunden till spelet
+background = pygame.image.load('background.png')
+
+# Namnet och ikonen på spelet
+pygame.display.set_caption("Chill Simulator")
+ikon = pygame.image.load('kaffe.png')
+pygame.display.set_icon(ikon)
+
+# Din spelare som du styr (Froggie)
+spelareBild = pygame.image.load('froggie.png')
+rect = spelareBild.get_rect()
+vel = 1
+
+# De goda pizzorna plus rectangle för att fixa kollision
+pizzaBild = pygame.image.load('pizza.png')
+rectTvå = pizzaBild.get_rect()
+
+# Froggie/spelaren som du spelar's ritning (.blit)
+def spelare():
+    skärm.blit(spelareBild, rect)
+
+
+def pizza():
+    skärm.blit(pizzaBild, rectTvå)
+#HUR FUCK SKA MAN SPARA HIGHSCORE
+poäng = 0
+
+
+# Loopen som själva spelet sker i
+spelet = True
+while spelet:
+
+    # Bakgrunds färgen
+    skärm.fill((0, 0, 0))
+    # Bakgrounden till spelet fast i while loopen
+    skärm.blit(background, (0,0))
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            spelet = False
+
+        # Checka om du vill röra dig innuti spelet via knapparn
+    keys = pygame.key.get_pressed()
+    if keys[pygame.K_a]:
+        rect.x -= vel
+    if keys[pygame.K_d]:
+        rect.x += vel
+    if keys[pygame.K_s]:
+        rect.y += vel
+    if keys[pygame.K_w]:
+        rect.y -= vel
+
+    if rect.y <= 0:
+        rect.y = 0
+    if rect.y >= 736:
+        rect.y = 736
+    if rect.x <= 0:
+        rect.x = 0
+    elif rect.x >= 736:
+        rect.x = 736
+# Kollar om din gubbe rör pizzan och isf ger ett poäng hela tiden du rör den
+    if rect.colliderect(rectTvå):
+        poäng += 1
+    print(poäng)
+
+    # Ändrar spelarens position med hjälp av koden innan (när man pressar ner en knapp).
+    pizza()
+    spelare()
+    pygame.display.update()
