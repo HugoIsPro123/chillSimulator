@@ -1,6 +1,6 @@
 import pygame
-import pickle
-
+import time
+from pygame import mixer
 # installeringen av pygame
 pygame.init()
 
@@ -8,7 +8,11 @@ pygame.init()
 skärm = pygame.display.set_mode((800, 800))
 
 # Bakgrunden till spelet
-background = pygame.image.load('background.png')
+background = pygame.image.load('background.jpg')
+
+# Bakgrunds musiken
+mixer.music.load("bakgrund.mp3")
+mixer.music.play()
 
 # Namnet och ikonen på spelet
 pygame.display.set_caption("Chill Simulator")
@@ -28,11 +32,30 @@ rectTvå = pizzaBild.get_rect()
 def spelare():
     skärm.blit(spelareBild, rect)
 
-
+# blit (ritningen) av pizzan som en funktion
 def pizza():
     skärm.blit(pizzaBild, rectTvå)
-#HUR FUCK SKA MAN SPARA HIGHSCORE
-poäng = 0
+
+# Så att poängen alltid börjar på 0
+points = 0
+
+# Laddar in ditt gammla poäng som du fick förra gången du spelade från "Oldscore.txt) filen
+f = open("Oldscore.txt", "r")
+oldScore = f.read()
+print(oldScore)
+
+# Uppskrivandet av dina gammla poäng på skärmen
+def poäng():
+    opera_font = pygame.font.Font('SlopeOpera-gg1Y.ttf', 36)
+    text_platform = opera_font.render(oldScore,True,(0,100,0))
+    skärm.blit(text_platform, (463, 260))
+
+# Samma sak fast som svart och en annan positionering så att det blir en drop shadow
+def poängShadow():
+    opera_font_shadow = pygame.font.Font('SlopeOpera-gg1Y.ttf', 36)
+    text_platform_shadow = opera_font_shadow.render(oldScore,True,(0,0,0))
+    skärm.blit(text_platform_shadow, (460, 265))
+
 
 
 # Loopen som själva spelet sker i
@@ -47,7 +70,11 @@ while spelet:
         if event.type == pygame.QUIT:
             spelet = False
 
-        # Checka om du vill röra dig innuti spelet via knapparn
+# Texten i spelet
+    poängShadow()
+    poäng()
+
+        # Checka om du vill röra dig innuti spelet via knapparna
     keys = pygame.key.get_pressed()
     if keys[pygame.K_a]:
         rect.x -= vel
@@ -66,12 +93,21 @@ while spelet:
         rect.x = 0
     elif rect.x >= 736:
         rect.x = 736
-# Kollar om din gubbe rör pizzan och isf ger ett poäng hela tiden du rör den
+# Kollar om din gubbe rör pizzan och isåfall ger ett poäng för hela tiden du rör den
     if rect.colliderect(rectTvå):
-        poäng += 1
-    print(poäng)
+        points += 1
 
-    # Ändrar spelarens position med hjälp av koden innan (när man pressar ner en knapp).
+
+
+# Save filen där ditt gamla poäng hamnar
+    f = open("Oldscore.txt", "w")
+#  Skrivandet, "oldScore" och sedan + en int fast vi gör om den till en string så att man kan lägga ihop de
+    f.write("oldScore = " + str(points))
+    f.close()
+
+
+    # ritar in gubbarna i while loopen
     pizza()
     spelare()
     pygame.display.update()
+
